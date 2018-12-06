@@ -1,0 +1,2 @@
+class SpulistsController < ApplicationController
+end

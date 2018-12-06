@@ -1,0 +1,2 @@
+class Skulist < ApplicationRecord
+end

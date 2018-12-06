@@ -1,0 +1,2 @@
+module SpulistsHelper
+end

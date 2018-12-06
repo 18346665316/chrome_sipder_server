@@ -1,0 +1,2 @@
+class SizesController < ApplicationController
+end

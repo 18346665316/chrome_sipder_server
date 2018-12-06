@@ -1,0 +1,2 @@
+class SkulistsController < ApplicationController
+end

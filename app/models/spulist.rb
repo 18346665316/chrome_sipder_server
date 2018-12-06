@@ -1,0 +1,2 @@
+class Spulist < ApplicationRecord
+end

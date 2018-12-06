@@ -32,21 +32,24 @@ class GoodsDataController < ApplicationController
       else
         render json: {code:"false"}
       end
-      end
+    end
   end
 
   def sku_data(text, sku_old=nil)
     skulist = text["script_text"]["valItemInfo"]["skuList"]
-    for goods_sku in skulist
-      sku = sku_old == nil ? Skulist.new() : sku_old
-      sku.skuid = goods_sku[1]["skuId"]
-      sku.size = goods_sku[1]["pvs"].split(';')[0]
-      sku.style = goods_sku[1]["pvs"].split(';')[1]
+    skulist.each  do|index, value_dict|
+      sku = (sku_old == nil) ? Skulist.new() : sku_old
+      if sku_old!=nil && sku_old.id !=value_dict["skuId"]
+        next
+      end
+      sku.skuid = value_dict["skuId"]
+      sku.size = value_dict["pvs"].split(';')[0]
+      sku.style = value_dict["pvs"].split(';')[1]
       sku.spuid = text["script_text"]["itemDO"]["spuId"]
-      sku.stock = text["script_text"]["valItemInfo"]["skuMap"][';'+ goods_sku[1]["pvs"]+ ';']["stock"]
-      sku.price = text["script_text"]["valItemInfo"]["skuMap"][';'+ goods_sku[1]["pvs"]+ ';']["price"]
+      sku.stock = text["script_text"]["valItemInfo"]["skuMap"][';'+ value_dict["pvs"]+ ';']["stock"]
+      sku.price = text["script_text"]["valItemInfo"]["skuMap"][';'+ value_dict["pvs"]+ ';']["price"]
       rul = $r1.sadd("sku_key", sku.skuid)
-      #当通过redis过滤或者是更新数据的时候,保存sku
+            #当通过redis过滤或者是更新数据的时候,保存sku
       if rul == true || sku_old != nil
         sku.save
       end
@@ -129,7 +132,8 @@ class GoodsDataController < ApplicationController
         save text
       end
       array_extra = sku_list - skuid_list_extra
-      if array_extra.empty?
+      puts "extra列表#{array_extra}"
+      if array_extra.empty? != true
         array_extra.each {|sku| Skulist.find_by_skuid(sku).destroy}
       end
     end
